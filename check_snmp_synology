@@ -7,6 +7,7 @@
 # Modified By:
 # 04.17.2019  Corben Eastman
 # 12.07.2019  Blake Cottington - added additional UPS OIDs/stats, added output for performance data for system temperature and UPS
+# 26.09.2024 - added -P opt to declare port number
 #---------------------------------------------------
 # this plugin checks the health of your Synology NAS
 # - System status (Power, Fans)
@@ -138,10 +139,11 @@ if [ "$1" == "--help" ]; then
     usage; exit 0
 fi
 
-while getopts 2:W:C:w:c:u:p:h:t:iU OPTNAME; do
+while getopts 2:W:C:w:c:u:p:P:h:t:iU OPTNAME; do
         case "$OPTNAME" in
 	u)	SNMPUser="$OPTARG";;
         p)	SNMPPassword="$OPTARG";;
+        P)	port="$OPTARG";;
         h)	hostname="$OPTARG";;
 	2)	SNMPVersion="2"
 		SNMPV2Community="$OPTARG";;
@@ -154,6 +156,10 @@ while getopts 2:W:C:w:c:u:p:h:t:iU OPTNAME; do
         *)      usage;;
         esac
 done
+
+if [ -n "$port" ]; then
+    hostname="$hostname:$port"
+fi
 
 if [ -z ${checkType+x} ] ; then
     echo "Missing check type";
